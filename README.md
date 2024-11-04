@@ -31,9 +31,9 @@ This works with Ableton Live 12. It was tested on MacOS, but should work on Wind
 * `METRONOME`: Toggle metronome
 * `BUBBLE`: Toggle arranger/session view
 
-* `MIC`: Arm current track. This disarms all other tracks.
-* `COM`: Mute or unmute current track (toggle). 
-* `ARP`: Solo current track (toggle). This unsolos all other tracks.
+* `MIC`: Toggle arm on current track. This disarms all other tracks.
+* `COM`: Toggle mute on current track. 
+* `ARP`: Toggle solo on current track. This unsolos all other tracks.
 
 Encoders:
 * `BLUE`: -
@@ -41,4 +41,4 @@ Encoders:
 * `GRAY`: 
   * when in session: `TURN` to change selected scene, `PUSH` to play selected scene 
   * when in arrange: `TURN` to move the playhead
-* `ORANGE`: `TURN` to change selected track
+* `ORANGE`: `TURN` to change selected track, `PUSH+TURN` to change selected track volume
