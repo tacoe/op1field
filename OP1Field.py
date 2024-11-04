@@ -9,37 +9,6 @@ from ableton.v2.control_surface.control import ButtonControl # type: ignore
 from ableton.v2.control_surface import Skin # type: ignore
 from ableton.v2.control_surface.elements import Color # type: ignore
 
-# this one works and is partly going off 
-# https://github.com/gluon/AbletonLive10.1_MIDIRemoteScripts/blob/master/iRig_Keys_IO/irig_keys_io.py
-
-
-'''
-
-REC: Clip record
-PLAY: Global play
-STOP: Global stop
-
-LIFT: Undo
-DROP: Redo
-SCISSORS: Delete clip
-
-3/LOOP: Toggle loop
-METRONOME: Toggle metronome
-BUBBLE: Toggle arranger/session iew
-
-MIC: arm current track
-COM: mute current track (toggle)
-ARP: solo current track (toggle)
-
-Encoders:
-BLUE: -
-OCHRE: -
-GRAY: session: select scene (turn) / play scene (push)
-GRAY: arrange: move playhead (turn)
-ORANGE: select track (turn)
-
-'''
-
 logger = logging.getLogger("OP1Field")
 
 B_REC = 0x26
@@ -96,11 +65,10 @@ class OP1Field(ControlSurface):
         self.start_logging()
         logger.info("Init -- OP1Field")
 
-        self.show_message("Init -- OP1Field")
         with self.component_guard():
             self._create_controls()
             self._create_transport()
-        self.show_message("OP1 Field done.")
+        self.show_message("OP1 Field controller enabled")
         
     def disconnect(self):
         logger.removeHandler(self.log_file_handler)
@@ -237,7 +205,6 @@ class OP1Field(ControlSurface):
         if idx >= len(scenes): idx = len(scenes)-1
 
         self.song.view.selected_scene = scenes[idx]
-        self.show_message(f"Scene: {scenes[idx].name}")
 
     def clear_track_assignments(self, strip):
         strip.set_volume_control(None)
@@ -267,7 +234,6 @@ class OP1Field(ControlSurface):
 
     def enable_hotswap(self, value):
         if(value == 127):
-            self.show_message("OP1 enable hotswap")
             selected_track = self.song.view.selected_track
             selected_device = selected_track.view.selected_device
             if selected_device:
@@ -275,7 +241,6 @@ class OP1Field(ControlSurface):
 
     def browse_synth(self, value):
         if(value == 127):
-            self.show_message("OP1 synth browse")
             self.application.browser.hotswap_target = self.application.browser.instruments
 
     def is_session(self):
