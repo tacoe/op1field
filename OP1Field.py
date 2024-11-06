@@ -45,6 +45,7 @@ B_ARP = 0x1A
 
 class OP1Field(ControlSurface): 
     __doc__ = "OP-1 Field MIDI Controller"
+    enc3_pushed = False
     
     def start_logging(self):
         module_path = os.path.dirname(os.path.realpath(__file__))
@@ -97,19 +98,21 @@ class OP1Field(ControlSurface):
         self._cut_button = ButtonElement(True, MIDI_CC_TYPE, 0, B_CUT)
         self._cut_button.add_value_listener(self.cut_callback)
 
+        self._sceneselector = ButtonElement(True, MIDI_CC_TYPE, 0, B_ENC3)
+        self._sceneselector.add_value_listener(self.sceneselector_callback)
+        self._scenelaunch = ButtonElement(True, MIDI_CC_TYPE, 0, B_ENC3_PUSH)
+        self._scenelaunch.add_value_listener(self.scenelaunch_callback)
+
         self._trackselector = ButtonElement(True, MIDI_CC_TYPE, 0, B_ENC4)
         self._trackselector.add_value_listener(self.trackselector_callback)
+        self._trackselector = ButtonElement(True, MIDI_CC_TYPE, 0, B_ENC4_PUSH)
+        self._trackselector.add_value_listener(self.trackselector_push_callback)
         self._arm_button = ButtonElement(True, MIDI_CC_TYPE, 0, B_MIC)
         self._arm_button.add_value_listener(self.track_arm_callback)
         self._mute_button = ButtonElement(True, MIDI_CC_TYPE, 0, B_COM)
         self._mute_button.add_value_listener(self.track_mute_callback)
         self._solo_button = ButtonElement(True, MIDI_CC_TYPE, 0, B_ARP)
         self._solo_button.add_value_listener(self.track_solo_callback)
-
-        self._sceneselector = ButtonElement(True, MIDI_CC_TYPE, 0, B_ENC3)
-        self._sceneselector.add_value_listener(self.sceneselector_callback)
-        self._scenelaunch = ButtonElement(True, MIDI_CC_TYPE, 0, B_ENC3_PUSH)
-        self._scenelaunch.add_value_listener(self.scenelaunch_callback)
 
         self._viewswitch = ButtonElement(True, MIDI_CC_TYPE, 0, B_TALK)
         self._viewswitch.add_value_listener(self.view_switch)
@@ -159,13 +162,33 @@ class OP1Field(ControlSurface):
                 for track in self.song.tracks:
                     if track.can_be_armed and track != selected_track:
                         track.arm = False
-                selected_track.arm = True
+                selected_track.arm = not(selected_track.arm)
 
     def trackselector_callback(self, value):
-        if(value == 1):
-            self.change_active_track(1)
+        if(self.enc3_pushed):
+            selected_track = self.song.view.selected_track
+            volume_param = selected_track.mixer_device.volume
+            step = (volume_param.max - volume_param.min) / 50
+            if(value == 1):
+                volume_param.value = min(volume_param.value + step, volume_param.max)
+            if(value == 127):
+                volume_param.value = max(volume_param.value - step, volume_param.min)
+        else:
+            # if we're on the main track, snap out first
+            if self.song.view.selected_track == self.song.master_track:
+                self.song.view.selected_track = self.song.tracks[0]
+                return
+
+            if(value == 1):
+                self.change_active_track(1)
+            if(value == 127):
+                self.change_active_track(-1)
+        
+    def trackselector_push_callback(self, value):
         if(value == 127):
-            self.change_active_track(-1)
+            self.enc3_pushed = True
+        else:
+            self.enc3_pushed = False
         
     def sceneselector_callback(self, value):
         if self.is_session():
@@ -214,15 +237,16 @@ class OP1Field(ControlSurface):
         strip.set_arm_button(None)
 
     def selected_track_changed(self):
-        self.clear_tracks_assigments()
-        self._channel_strip = self._mixer.selected_strip()
-        self._channel_strip.set_solo_button(self._solo_button)
-        if (self._channel_strip._track.can_be_armed):
-            self._channel_strip.set_arm_button(self._arm_button)
+        return
+        #self.clear_track_assignments()
+        #self._channel_strip = self._mixer.selected_strip()
+        #self._channel_strip.set_solo_button(self._solo_button)
+        #if (self._channel_strip._track.can_be_armed):
+        #    self._channel_strip.set_arm_button(self._arm_button)
 
-        if (self._channel_strip._track != self.song.master_track):
-            self._channel_strip.set_mute_button(self._mute_button)
-            self._channel_strip.set_solo_button(self._solo_button)
+        #if (self._channel_strip._track != self.song.master_track):
+        #    self._channel_strip.set_mute_button(self._mute_button)
+        #    self._channel_strip.set_solo_button(self._solo_button)
 
 
     def view_switch(self, value):
