@@ -7,11 +7,10 @@ The workflow happens to be mine, it might not suit yours. I've kept OP-1's basic
 This works with Ableton Live 12. It was tested on MacOS, but should work on Windows as well.
 
 ## Installation
-(these are the steps on MacOS, for Windows they should be comparable)
-1. Open Live, under "Places" in the left-hand browser right-click "User Library" then select "Show in Finder"
-2. Create a folder called "MIDI Remote Scripts" if it doesn't exist yet
-3. Open finder, enter `cd ` (including space) and drag the midi remote scripts folder, then hit enter
-4. Type `git clone https://github.com/tacoe/op1field` if you have git, otherwise download a zip and unpack here. 'op1field' should be a subdirectory of 'MIDI remote scripts'.
+1. Download and unpack source code from https://github.com/tacoe/OP1field/releases
+2. Open Live and find "Places" in the left-hand browser. 
+3. Right-click an empty space in the list next to it, click 'New Folder' and name it "Remote Scripts". Skip this step if the folder already exists.
+4. In Finder or Explorer, locate the unzipped 'OP1Field' folder and drag it onto the "Remote Scripts" folder in Ableton Live.
 5. Close then re-open Live.
 
 ## Setup and operation
