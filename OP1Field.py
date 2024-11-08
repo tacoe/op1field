@@ -295,3 +295,6 @@ class Colors:
         MuteOn = Color(0)
         SoloOn = Color(127)
         SoloOff = Color(0)
+        
+def create_instance(c_instance):
+    return OP1Field(c_instance)
